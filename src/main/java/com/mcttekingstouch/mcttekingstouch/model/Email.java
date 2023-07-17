@@ -1,5 +1,7 @@
 package com.mcttekingstouch.mcttekingstouch.model;
 
+import java.util.Objects;
+
 public class Email {
     private final String address;
 
@@ -14,5 +16,23 @@ public class Email {
         }
     }
 
+    @Override
+    public String toString() {
+        return "Email{" +
+                "address='" + address + '\'' +
+                '}';
+    }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Email email = (Email) o;
+        return Objects.equals(address, email.address);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(address);
+    }
 }
