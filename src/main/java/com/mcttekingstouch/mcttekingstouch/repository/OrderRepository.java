@@ -14,7 +14,7 @@ public interface OrderRepository {
 
     Optional<Order> findById(UUID orderId);
 
-    Optional<Order> findByEmail(Email email);
+    List<Order> findByEmail(Email email);
 
     int deleteAll();
 }
