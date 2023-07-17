@@ -25,7 +25,7 @@ public class BurgerJdbcRepository implements BurgerRepository {
 
     private final RowMapper<Burger> burgerRowMapper = (rs, rowNum) -> {
 
-        UUID burgerId = toUUID(rs.getString("burger_id").getBytes());
+        UUID burgerId = toUUID(rs.getBytes("burger_id"));
         String burgerName = rs.getString("burger_name");
         long price = rs.getLong("price");
         BurgerType burgerType = BurgerType.valueOf(rs.getString("burger_type"));
@@ -135,4 +135,11 @@ public class BurgerJdbcRepository implements BurgerRepository {
     public int deleteAll() {
         return jdbcTemplate.update("DELETE FROM burgers", Collections.emptyMap());
     }
+
+    @Override
+    public int deleteByName(String name) {
+        return jdbcTemplate.update("DELETE FROM burgers WHERE burger_name = :name",
+                Collections.singletonMap("name", name));
+    }
+
 }

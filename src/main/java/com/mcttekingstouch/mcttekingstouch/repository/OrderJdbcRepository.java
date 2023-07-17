@@ -21,7 +21,7 @@ public class OrderJdbcRepository implements OrderRepository {
     }
 
     private final RowMapper<Order> orderRowMapper = (rs, rowNum) -> {
-        UUID orderId = toUUID(rs.getString("order_id").getBytes());
+        UUID orderId = toUUID(rs.getBytes("order_id"));
         Email email = new Email(rs.getString("email"));
         String address = rs.getString("address");
         String postcode = rs.getString("postcode");
