@@ -24,4 +24,6 @@ public interface BurgerRepository {
     int count();
 
     int deleteAll();
+
+    int deleteByName(String name);
 }
