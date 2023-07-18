@@ -35,4 +35,8 @@ public class Email {
     public int hashCode() {
         return Objects.hash(address);
     }
+
+    public String getAddress() {
+        return address;
+    }
 }
