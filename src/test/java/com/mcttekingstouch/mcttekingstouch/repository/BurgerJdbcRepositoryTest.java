@@ -22,7 +22,7 @@ class BurgerJdbcRepositoryTest {
     private final int SUCCESS = 1;
 
     @Autowired
-    private BurgerJdbcRepository burgerJdbcRepository;
+    private BurgerRepository burgerJdbcRepository;
 
     static Burger burger;
 
@@ -41,28 +41,56 @@ class BurgerJdbcRepositoryTest {
 
     @Test
     @Order(1)
-    @DisplayName("버거를 저장한다")
+    @DisplayName("버거를 저장할 수 있다")
     void testSave() {
         int isSuccess = burgerJdbcRepository.save(burger);
-        System.out.println("테스트1: 버거 ID : " + burger.burgerId());
+        System.out.println("테스트1: 버거 ID : " + burger.getBurgerId());
         assertThat(isSuccess, is(SUCCESS));
     }
 
     @Test
     @Order(2)
-    @DisplayName("기존의 버거를 수정한다")
+    @DisplayName("기존의 버거를 수정할 수 있다")
     void testUpdate() {
         Burger newBurger = new Burger(testUuid,
                 "시험용 버거2",
                 3000,
                 BurgerType.CHICKEN_BURGER,
                 BurgerCompany.MCDONALDS,
-                burger.createdAt(),
+                burger.getCreatedAt(),
                 LocalDateTime.now());
 
         int isSuccess = burgerJdbcRepository.save(newBurger);
-        System.out.println("테스트2: 버거2 ID : " + newBurger.burgerId());
+        System.out.println("테스트2: 버거2 ID : " + newBurger.getBurgerId());
         assertThat(isSuccess, is(SUCCESS));
         assertThat(burgerJdbcRepository.count(), is(1));
+    }
+
+    @Test
+    @Order(3)
+    @DisplayName("버거 종류의 갯수를 구할 수 있다")
+    void testCount() {
+        int count = burgerJdbcRepository.count();
+
+        assertThat(count, is(1));
+    }
+
+    @Test
+    @Order(4)
+    @DisplayName("모든 버거를 삭제할 수 있다")
+    void testDeleteAll() {
+
+        int deleted = burgerJdbcRepository.deleteAll();
+
+        assertThat(deleted, is(1));
+    }
+
+    @Test
+    @Order(5)
+    @DisplayName("비어있는 상태의 갯수를 구할 수 있다")
+    void testCountEmpty() {
+        int count = burgerJdbcRepository.count();
+
+        assertThat(count, is(0));
     }
 }
