@@ -43,13 +43,13 @@ public class BurgerJdbcRepository implements BurgerRepository {
 
     private Map<String, Object> toParamMap(Burger burger) {
         Map<String, Object> map = new HashMap<>();
-        map.put("burgerId", burger.burgerId().toString().getBytes());
-        map.put("burgerName", burger.burgerName());
-        map.put("price", burger.price());
-        map.put("burgerType", burger.burgerType().toString());
-        map.put("burgerCompany", burger.burgerCompany().toString());
-        map.put("createdAt", burger.createdAt());
-        map.put("updatedAt", burger.updatedAt());
+        map.put("burgerId", burger.getBurgerId().toString().getBytes());
+        map.put("burgerName", burger.getBurgerName());
+        map.put("price", burger.getPrice());
+        map.put("burgerType", burger.getBurgerType().toString());
+        map.put("burgerCompany", burger.getBurgerCompany().toString());
+        map.put("createdAt", burger.getCreatedAt());
+        map.put("updatedAt", burger.getUpdatedAt());
         return map;
     }
 
@@ -59,7 +59,7 @@ public class BurgerJdbcRepository implements BurgerRepository {
     @Override
 
     public int save(Burger burger) {
-        Optional<Burger> optionalBurger = findById(burger.burgerId());
+        Optional<Burger> optionalBurger = findById(burger.getBurgerId());
         // 버거가 없을 경우 새로 만들어줌
         if (optionalBurger.isEmpty()) {
             return jdbcTemplate.update("INSERT INTO burgers(burger_id, burger_name, price, burger_type, burger_company, created_at, updated_at) " +
@@ -67,15 +67,7 @@ public class BurgerJdbcRepository implements BurgerRepository {
         }
         // 기존에 있는 버거를 수정해줌
         return jdbcTemplate.update("UPDATE burgers SET price = :price, burger_type = :burgerType, burger_company = :burgerCompany, created_at = :createdAt, updated_at = :updatedAt " +
-                "WHERE burger_id = UUID_TO_BIN(:burgerId)", new HashMap<>() {{
-            put("burgerId", burger.burgerId().toString().getBytes());
-            put("burgerName", burger.burgerName());
-            put("price", burger.price());
-            put("burgerType", burger.burgerType().toString());
-            put("burgerCompany", burger.burgerCompany().toString());
-            put("createdAt", burger.createdAt());
-            put("updatedAt", LocalDateTime.now());
-        }});
+                "WHERE burger_id = UUID_TO_BIN(:burgerId)", toParamMap(burger));
     }
 
     @Override

@@ -39,34 +39,44 @@ public class OrderJdbcRepository implements OrderRepository {
 
     private Map<String, Object> toParamMap(Order order) {
         Map<String, Object> map = new HashMap<>();
-        map.put("orderId", order.orderId().toString().getBytes());
-        map.put("email", order.email().toString());
-        map.put("address", order.address());
-        map.put("postcode", order.postcode());
-        map.put("status", order.status().toString());
-        map.put("createdAt", order.createdAt());
-        map.put("updatedAt", order.updatedAt());
+        map.put("orderId", order.getOrderId().toString().getBytes());
+        map.put("email", order.getEmail().getAddress());
+        map.put("address", order.getAddress());
+        map.put("postcode", order.getPostcode());
+        map.put("status", order.getStatus().toString());
+        map.put("createdAt", order.getCreatedAt());
+        map.put("updatedAt", order.getUpdatedAt());
         return map;
     }
 
     @Override
     public int save(Order order) {
-        Optional<Order> optionalOrder = findById(order.orderId());
+        Optional<Order> optionalOrder = findById(order.getOrderId());
+        int updated = 0;
+        // 주문이 없는 경우 새로 만들기
         if (optionalOrder.isEmpty()) {
-            return jdbcTemplate.update("INSERT INTO orders(order_id, email, address, postcode, status, created_at, updated_at) " +
+            updated = jdbcTemplate.update("INSERT INTO orders(order_id, email, address, postcode, status, created_at, updated_at) " +
                     "VALUES (UUID_TO_BIN(:orderId), :email, :address, :postcode, :status, :createdAt, :updatedAt)", toParamMap(order));
-        }
-        return jdbcTemplate.update("UPDATE orders SET email = :email, address = :address, postcode = :postcode, status = :status, created_at = :createdAt, updated_at = :updatedAt " +
-                        "WHERE order_id = UUID_TO_BIN(:orderId)",
-                new HashMap<>() {{
-                    put("orderId", order.orderId().toString().getBytes());
-                    put("email", order.email().toString());
-                    put("address", order.address());
-                    put("postcode", order.postcode());
-                    put("status", order.status().toString());
-                    put("createdAt", order.createdAt());
-                    put("updatedAt", LocalDateTime.now());
+
+            order.getOrderItems().forEach(orderItems -> {
+                jdbcTemplate.update("INSERT INTO order_items(burger_id, order_id, burger_name, quantity, created_at, updated_at) " +
+                        "VALUES (UUID_TO_BIN(:burgerId), UUID_TO_BIN(:orderId), :burgerName, :quantity, :createdAt, :updatedAt)", new HashMap<>() {{
+                    put("burgerId", orderItems.burgerId().toString().getBytes());
+                    put("orderId", order.getOrderId().toString().getBytes());
+                    put("burgerName", orderItems.burgerName());
+                    put("quantity", orderItems.quantity());
+                    put("createdAt", orderItems.createdAt());
+                    put("updatedAt", orderItems.updatedAt());
                 }});
+            });
+        }
+        // 기존에 주문이 있는 경우 변경하기
+        if (optionalOrder.isPresent()) {
+            updated = jdbcTemplate.update("UPDATE orders SET email = :email, address = :address, postcode = :postcode, status = :status, created_at = :createdAt, updated_at = :updatedAt " +
+                            "WHERE order_id = UUID_TO_BIN(:orderId)",
+                    toParamMap(order));
+        }
+        return updated;
 
     }
 
@@ -90,7 +100,7 @@ public class OrderJdbcRepository implements OrderRepository {
     @Override
     public List<Order> findByEmail(Email email) {
         return jdbcTemplate.query("SELECT * FROM orders WHERE email = :email",
-                Collections.singletonMap("email", email.toString()),
+                Collections.singletonMap("email", email.getAddress()),
                 orderRowMapper);
     }
 
