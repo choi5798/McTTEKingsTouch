@@ -1,7 +1,7 @@
 package com.mcttekingstouch.mcttekingstouch.service;
 
 import com.mcttekingstouch.mcttekingstouch.controller.api.CreateBurgerRequest;
-import com.mcttekingstouch.mcttekingstouch.controller.api.ModifyBurgerRequest;
+import com.mcttekingstouch.mcttekingstouch.controller.api.UpdateBurgerRequest;
 import com.mcttekingstouch.mcttekingstouch.model.Burger;
 import com.mcttekingstouch.mcttekingstouch.repository.BurgerRepository;
 import org.springframework.stereotype.Service;
@@ -51,21 +51,26 @@ public class BurgerService {
 
     }
 
-    public void modifyBurger(ModifyBurgerRequest request) {
+    public void updateBurger(UpdateBurgerRequest request) {
         Burger burger = burgerRepository
-                .findByName(request.burgerName())
+                .findById(request.burgerId())
                 .orElseThrow(() -> new IllegalStateException("해당 햄버거가 존재하지 않습니다"));
 
-        Burger newBurger = new Burger(
-                burger.burgerId(),
-                request.burgerName(),
-                request.price(),
-                request.burgerType(),
-                request.burgerCompany(),
-                request.createdAt(),
-                LocalDateTime.now()
-        );
-        int updated = burgerRepository.save(newBurger);
+        if (request.burgerName() != null) {
+            burger.setBurgerName(request.burgerName());
+        }
+        if (request.price() != null) {
+            burger.setPrice(request.price());
+        }
+        if (request.burgerType() != null) {
+            burger.setBurgerType(request.burgerType());
+        }
+        if (request.burgerCompany() != null) {
+            burger.setBurgerCompany(request.burgerCompany());
+        }
+        burger.setUpdatedAt(LocalDateTime.now());
+
+        int updated = burgerRepository.save(burger);
         if (updated != SUCCESS) {
             throw new IllegalArgumentException("햄버거 갱신에 실패했습니다");
         }

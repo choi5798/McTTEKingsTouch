@@ -40,8 +40,8 @@ public class BurgerRestController {
     }
 
     @PatchMapping("/burgers")
-    public ResponseEntity<Void> modifyBurger(@RequestBody ModifyBurgerRequest request) {
-        burgerService.modifyBurger(request);
+    public ResponseEntity<Void> updateBurger(@RequestBody UpdateBurgerRequest request) {
+        burgerService.updateBurger(request);
         return ResponseEntity.ok().build();
     }
 
