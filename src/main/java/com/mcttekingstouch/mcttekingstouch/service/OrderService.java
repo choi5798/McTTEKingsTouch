@@ -4,6 +4,7 @@ import com.mcttekingstouch.mcttekingstouch.controller.api.CreateOrderRequest;
 import com.mcttekingstouch.mcttekingstouch.controller.api.UpdateOrderRequest;
 import com.mcttekingstouch.mcttekingstouch.model.Email;
 import com.mcttekingstouch.mcttekingstouch.model.Order;
+import com.mcttekingstouch.mcttekingstouch.model.OrderStatus;
 import com.mcttekingstouch.mcttekingstouch.repository.OrderRepository;
 import org.springframework.stereotype.Service;
 
@@ -33,7 +34,7 @@ public class OrderService {
                 request.email(),
                 request.address(),
                 request.postcode(),
-                request.status(),
+                OrderStatus.ACCEPTED,
                 request.orderItems(),
                 LocalDateTime.now(),
                 LocalDateTime.now()
