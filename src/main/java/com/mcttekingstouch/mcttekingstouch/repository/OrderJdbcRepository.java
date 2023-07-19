@@ -65,8 +65,8 @@ public class OrderJdbcRepository implements OrderRepository {
                     put("orderId", order.getOrderId().toString().getBytes());
                     put("burgerName", orderItems.burgerName());
                     put("quantity", orderItems.quantity());
-                    put("createdAt", orderItems.createdAt());
-                    put("updatedAt", orderItems.updatedAt());
+                    put("createdAt", LocalDateTime.now());
+                    put("updatedAt", LocalDateTime.now());
                 }});
             });
         }
